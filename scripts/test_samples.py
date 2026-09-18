@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -111,6 +112,7 @@ def test_llm_path() -> int:
             failures += 1
         else:
             print(f"{case['id']}: PASS interpretation+optimize ({result.total_cost_bdt:.2f} BDT)")
+        time.sleep(0.5)
     return failures
 
 

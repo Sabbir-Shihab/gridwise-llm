@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import time
 from typing import Any
 
 import httpx
@@ -140,15 +141,32 @@ def _call_groq(user_content: str) -> str:
             {"role": "user", "content": user_content},
         ],
     }
+    last_error: Exception | None = None
     with httpx.Client(timeout=LLM_TIMEOUT_SECONDS) as client:
-        response = client.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers=headers,
-            json=payload,
-        )
-        response.raise_for_status()
-        data = response.json()
-    return data["choices"][0]["message"]["content"]
+        for attempt in range(4):
+            response = client.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+            if response.status_code == 429:
+                retry_after = response.headers.get("retry-after", "1")
+                try:
+                    wait = min(max(float(retry_after), 0.8), 3.5)
+                except ValueError:
+                    wait = 1.2
+                logger.warning("Groq HTTP 429, retry in %.1fs", wait)
+                time.sleep(wait)
+                continue
+            if response.status_code >= 400:
+                logger.warning("Groq HTTP %s", response.status_code)
+                response.raise_for_status()
+            data = response.json()
+            content = data["choices"][0]["message"].get("content") or ""
+            if not content.strip():
+                raise LLMInterpretationError("empty model content")
+            return content
+    raise LLMInterpretationError("Groq rate limited")
 
 
 def _call_gemini(user_content: str) -> str:

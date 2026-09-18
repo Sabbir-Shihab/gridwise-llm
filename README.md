@@ -8,7 +8,7 @@ Public FastAPI service that interprets campus operator notes with a language mod
 
 ```
 operator notes
-    -> Groq (llama-3.3-70b-versatile) or Gemini Flash
+    -> Groq (`openai/gpt-oss-20b`) or Gemini Flash
     -> deterministic guardrails
     -> OR-Tools GLOP linear program
     -> independent hour-by-hour replay
@@ -23,7 +23,7 @@ The LLM is on the operator-note interpretation path. Guardrails never invent a n
 |---|---|---|
 | `GROQ_API_KEY` | One of Groq or Gemini | Operator-note interpretation (preferred, low latency) |
 | `GEMINI_API_KEY` | One of Groq or Gemini | Fallback / alternative interpreter |
-| `GROQ_MODEL` | No | Default `llama-3.3-70b-versatile` |
+| `GROQ_MODEL` | No | Default `openai/gpt-oss-20b` |
 | `GEMINI_MODEL` | No | Default `gemini-2.0-flash` |
 | `LLM_TIMEOUT_SECONDS` | No | Default `12` |
 | `LLM_MAX_RETRIES` | No | Default `2` |
@@ -100,7 +100,7 @@ Expected: each note maps to the public `directive_type`, hours, and numeric valu
 
 ## LLM role, guardrails, optimizer
 
-**LLM.** Groq `llama-3.3-70b-versatile` by default (Gemini Flash if only `GEMINI_API_KEY` is set). One JSON call interprets all 1–3 notes. Battery capacity is passed so percentage reserves become kWh. Time windows are start-inclusive / end-exclusive. `solar_reduction.factor` is the remaining usable fraction (an 80% reduction → `0.2`).
+**LLM.** Groq `openai/gpt-oss-20b` by default (Gemini Flash if only `GEMINI_API_KEY` is set). One JSON call interprets all 1–3 notes. Battery capacity is passed so percentage reserves become kWh. Time windows are start-inclusive / end-exclusive. `solar_reduction.factor` is the remaining usable fraction (an 80% reduction → `0.2`).
 
 **Guardrails.** Allowed types only. Exactly one entry per note in `note_index` order. `no_op` uses `applies=false` and `structured_adjustment=null`. Other types use `applies=true` with the required shape. Hours are unique integers `0..23` ascending. Factor is in `[0,1]`. Reserve is finite, non-negative, and ≤ capacity. Invalid model JSON is retried once; unsupported types are never invented.
 
