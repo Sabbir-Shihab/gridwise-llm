@@ -6,15 +6,14 @@ Form: https://forms.gle/fDdAWMnipWXsfgc67
 
 | Field | Value |
 |---|---|
-| Public API base URL | `http://campuslenzbd.online/gridwise.campuslenzbd.online` |
-| Health | `GET http://campuslenzbd.online/gridwise.campuslenzbd.online/health` → `{"status":"ok"}` |
-| Optimize | `POST http://campuslenzbd.online/gridwise.campuslenzbd.online/optimize-energy` |
-| Alternate (after Namecheap A record) | `http://gridwise.campuslenzbd.online` |
+| Public API base URL | `https://label-offices-came-milk.trycloudflare.com` |
+| Health | `GET https://label-offices-came-milk.trycloudflare.com/health` → `{"status":"ok"}` |
+| Optimize | `POST https://label-offices-came-milk.trycloudflare.com/optimize-energy` |
 | GitHub repository | https://github.com/Sabbir-Shihab/gridwise-llm |
 | Docker image | `gridwise-llm:preli` locally; after GitHub Actions: `ghcr.io/<user>/gridwise-llm-preli:preli` |
 | Video | Record `scripts/VIDEO_SCRIPT.md` (max 3:00) |
 
-Live API is on the cPanel host, isolated from the Laravel site. Old sites were not modified. Add a Namecheap A record `gridwise` → `198.38.93.23` if you want the subdomain URL.
+Live API is tunneled off the origin uvicorn so judges get JSON with plain curl. Do **not** submit `campuslenzbd.online` — that host sits behind an Imunify/openresty anti-bot HTML challenge.
 
 Set `GROQ_API_KEY` (or `GEMINI_API_KEY`) in `.env` and restart uvicorn before judges send hidden cases. Without a key, `/health` works but `/optimize-energy` cannot interpret notes.
 
@@ -23,7 +22,7 @@ Set `GROQ_API_KEY` (or `GEMINI_API_KEY`) in `.env` and restart uvicorn before ju
 Base URL (no trailing path):
 
 ```
-http://campuslenzbd.online/gridwise.campuslenzbd.online
+https://label-offices-came-milk.trycloudflare.com
 ```
 
 Judge checks:
