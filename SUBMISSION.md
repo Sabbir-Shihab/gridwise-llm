@@ -2,14 +2,27 @@
 
 Form: https://forms.gle/fDdAWMnipWXsfgc67
 
-Fill these fields after the live URL, repository, Docker tag, and video are ready.
+## Live values (fill the Google Form with these)
+
+| Field | Value |
+|---|---|
+| Public API base URL | `https://3803aa1655d060.lhr.life` |
+| Health | `GET https://3803aa1655d060.lhr.life/health` → `{"status":"ok"}` |
+| Optimize | `POST https://3803aa1655d060.lhr.life/optimize-energy` |
+| GitHub repository | Create with `scripts/push_private_github.ps1` after `gh auth login` |
+| Docker image | `gridwise-llm:preli` locally; after GitHub Actions: `ghcr.io/<user>/gridwise-llm-preli:preli` |
+| Video | Record `scripts/VIDEO_SCRIPT.md` (max 3:00) |
+
+The public URL is a tunnel to this machine. Keep the laptop awake with the API process running until a Render/Railway host replaces it.
+
+Set `GROQ_API_KEY` (or `GEMINI_API_KEY`) in `.env` and restart uvicorn before judges send hidden cases. Without a key, `/health` works but `/optimize-energy` cannot interpret notes.
 
 ## 1. Working public endpoint
 
 Base URL (no trailing path):
 
 ```
-https://<your-service-host>
+https://3803aa1655d060.lhr.life
 ```
 
 Judge checks:
@@ -17,67 +30,65 @@ Judge checks:
 - `GET /health` → `{"status":"ok"}`
 - `POST /optimize-energy` with the Problem Statement schema
 
-Keep this host up through the evaluation window. Set `GROQ_API_KEY` (or `GEMINI_API_KEY`) on the host. Do not put the key in the form or README.
-
 ## 2. GitHub repository
 
-Create a **new private** repository after question reveal, push this project, keep it private during the event, then make it **public after 11:00 PM**.
+GitHub CLI is installed. Complete device login, then run the push script.
 
-```bash
-git init
-git add .
-git commit -m "Submit GridWise LLM preliminary service."
-# create a private GitHub repo in the browser, then:
-git remote add origin https://github.com/<user>/<repo>.git
-git branch -M main
-git push -u origin main
+```powershell
+# Browser: https://github.com/login/device
+gh auth login --hostname github.com --git-protocol https --web
+.\scripts\push_private_github.ps1
+```
+
+Keep the repo **private until 11:00 PM**, then:
+
+```powershell
+gh repo edit gridwise-llm-preli --visibility public --accept-visibility-change-consequences
 ```
 
 No commits after 11:00 PM.
 
 ## 3. README and configuration
 
-This repository README is the local quickstart: env var names, Groq/Gemini model, OR-Tools GLOP, curl examples, public-sample test command, Docker run, limitations, and secret handling.
+Repository README is the local quickstart: env var names, Groq/Gemini model, OR-Tools GLOP, curl examples, public-sample test command, Docker run, limitations, and secret handling.
 
 ## 4. Docker fallback image
 
-Build locally if Docker Desktop is installed:
+Docker Desktop is not installed on this machine. The `Dockerfile` is tested-layout ready (port 8000, bind `0.0.0.0`, no secrets).
+
+On a machine with Docker:
 
 ```bash
 docker build -t gridwise-llm:preli .
-docker tag gridwise-llm:preli ghcr.io/<user>/<repo>:preli
-docker push ghcr.io/<user>/<repo>:preli
-```
-
-After GitHub Actions runs on `main`, the image is:
-
-```
-ghcr.io/<user>/<repo>:preli
-```
-
-Verified run:
-
-```bash
-docker pull ghcr.io/<user>/<repo>:preli
-docker run --rm -p 8000:8000 -e GROQ_API_KEY=YOUR_KEY ghcr.io/<user>/<repo>:preli
+docker run --rm -p 8000:8000 -e GROQ_API_KEY=YOUR_KEY gridwise-llm:preli
 curl http://127.0.0.1:8000/health
 ```
 
-Image has no baked-in secrets. Port 8000, bind `0.0.0.0`.
+After the private GitHub repo exists, pushing `preli` runs `.github/workflows/docker-image.yml` and publishes:
+
+```
+ghcr.io/<user>/gridwise-llm-preli:preli
+```
+
+```bash
+docker pull ghcr.io/<user>/gridwise-llm-preli:preli
+docker run --rm -p 8000:8000 -e GROQ_API_KEY=YOUR_KEY ghcr.io/<user>/gridwise-llm-preli:preli
+```
 
 ## 5. 3-minute video
 
-Record `scripts/VIDEO_SCRIPT.md` as a screen capture (max 3:00). Upload MP4 or an organizer-accessible link (Drive/YouTube unlisted).
+Record `scripts/VIDEO_SCRIPT.md` as a screen capture (max 3:00). Upload MP4 or an organizer-accessible Drive/YouTube unlisted link.
 
-The video is tie-break only. It still must be submitted.
+Tie-break only, but still required.
 
 ## Pre-submit checklist
 
-- [ ] `GET /health` works from outside the laptop
-- [ ] `POST /optimize-energy` accepts 1–3 operator notes
-- [ ] LLM key is set on the host, not in git
-- [ ] Repository is private until the deadline, then public
-- [ ] README local quickstart works
-- [ ] Docker tag is pullable
-- [ ] Video ≤ 3 minutes
+- [x] `GET /health` works locally and through the public tunnel
+- [ ] `GROQ_API_KEY` or `GEMINI_API_KEY` set so `/optimize-energy` can interpret notes
+- [ ] GitHub private repo pushed (`scripts/push_private_github.ps1`)
+- [ ] README local quickstart used as-is
+- [ ] Docker image built/pushed from a Docker-capable machine or GHCR
+- [ ] Video ≤ 3 minutes uploaded
+- [ ] Google Form submitted
 - [ ] No commit after 11:00 PM
+- [ ] Repo made public after the deadline
