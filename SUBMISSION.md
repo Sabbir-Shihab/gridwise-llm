@@ -6,14 +6,15 @@ Form: https://forms.gle/fDdAWMnipWXsfgc67
 
 | Field | Value |
 |---|---|
-| Public API base URL | `https://3803aa1655d060.lhr.life` |
-| Health | `GET https://3803aa1655d060.lhr.life/health` → `{"status":"ok"}` |
-| Optimize | `POST https://3803aa1655d060.lhr.life/optimize-energy` |
-| GitHub repository | Create with `scripts/push_private_github.ps1` after `gh auth login` |
+| Public API base URL | `http://campuslenzbd.online/gridwise.campuslenzbd.online` |
+| Health | `GET http://campuslenzbd.online/gridwise.campuslenzbd.online/health` → `{"status":"ok"}` |
+| Optimize | `POST http://campuslenzbd.online/gridwise.campuslenzbd.online/optimize-energy` |
+| Alternate (after Namecheap A record) | `http://gridwise.campuslenzbd.online` |
+| GitHub repository | https://github.com/Sabbir-Shihab/gridwise-llm |
 | Docker image | `gridwise-llm:preli` locally; after GitHub Actions: `ghcr.io/<user>/gridwise-llm-preli:preli` |
 | Video | Record `scripts/VIDEO_SCRIPT.md` (max 3:00) |
 
-The public URL is a tunnel to this machine. Keep the laptop awake with the API process running until a Render/Railway host replaces it.
+Live API is on the cPanel host, isolated from the Laravel site. Old sites were not modified. Add a Namecheap A record `gridwise` → `198.38.93.23` if you want the subdomain URL.
 
 Set `GROQ_API_KEY` (or `GEMINI_API_KEY`) in `.env` and restart uvicorn before judges send hidden cases. Without a key, `/health` works but `/optimize-energy` cannot interpret notes.
 
@@ -22,7 +23,7 @@ Set `GROQ_API_KEY` (or `GEMINI_API_KEY`) in `.env` and restart uvicorn before ju
 Base URL (no trailing path):
 
 ```
-https://3803aa1655d060.lhr.life
+http://campuslenzbd.online/gridwise.campuslenzbd.online
 ```
 
 Judge checks:
@@ -32,21 +33,9 @@ Judge checks:
 
 ## 2. GitHub repository
 
-GitHub CLI is installed. Complete device login, then run the push script.
+https://github.com/Sabbir-Shihab/gridwise-llm
 
-```powershell
-# Browser: https://github.com/login/device
-gh auth login --hostname github.com --git-protocol https --web
-.\scripts\push_private_github.ps1
-```
-
-Keep the repo **private until 11:00 PM**, then:
-
-```powershell
-gh repo edit gridwise-llm-preli --visibility public --accept-visibility-change-consequences
-```
-
-No commits after 11:00 PM.
+The live code is on branch `preli`, pushed to `main`. No commits after 11:00 PM.
 
 ## 3. README and configuration
 
